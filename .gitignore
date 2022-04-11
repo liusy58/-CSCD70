@@ -5,6 +5,7 @@ build
 *.o
 *.bc
 *.so
+**/build
 
 # IDE
 .vscode

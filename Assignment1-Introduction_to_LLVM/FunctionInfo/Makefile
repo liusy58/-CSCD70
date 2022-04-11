@@ -14,3 +14,4 @@ $(OPTIMIZER): $(OBJs)
 .PHONY: clean
 clean:
 	$(RM) $(OPTIMIZER) $(OBJs)
+
