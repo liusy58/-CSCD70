@@ -14,9 +14,13 @@ public:
   /**
    * @todo(cscd70) Please complete the methods below.
    */
-  virtual void getAnalysisUsage(AnalysisUsage &AU) const override {}
+  virtual void getAnalysisUsage(AnalysisUsage &AU) const override {
 
-  virtual bool runOnFunction(Function &F) override { return false; }
+  }
+
+  virtual bool runOnFunction(Function &F) override { 
+    return false; 
+  }
 }; // class MultiInstOpt
 
 char MultiInstOpt::ID = 0;

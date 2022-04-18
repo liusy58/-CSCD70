@@ -7,7 +7,7 @@ set(LLVM_VERSION_SUFFIX "-${LLVM_VERSION}")
 execute_process(COMMAND llvm-config${LLVM_VERSION_SUFFIX} --cxxflags
                 OUTPUT_VARIABLE LLVM_CXXFLAGS
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-set(CMAKE_CXX_FLAGS "${LLVM_CXXFLAGS} -Wall -Werror")
+set(CMAKE_CXX_FLAGS "${LLVM_CXXFLAGS} -Wall -Werror ")
 
 set(CMAKE_CXX_CLANG_TIDY clang-tidy${LLVM_VERSION_SUFFIX})
 

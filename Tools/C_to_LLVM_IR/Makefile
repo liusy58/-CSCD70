@@ -1,5 +1,5 @@
 LLs := $(subst .c,.ll,$(wildcard *.c))
-
+BCs := $(subst .c,.bc,$(wildcard *.c))
 EXTRA_PASSES ?= mem2reg
 EXTRA_PASSES_OPT_ARG := $(foreach pass,$(EXTRA_PASSES),-$(pass))
 
@@ -9,7 +9,7 @@ LLVM_VERSION ?= 12
 LLVM_VERSION_SUFFIX := -$(LLVM_VERSION)
 
 .PHONY: all
-all: $(LLs) Makefile
+all: $(LLs) $(BCs)
 
 %.ll: %.bc
 	opt$(LLVM_VERSION_SUFFIX) -S $(EXTRA_PASSES_OPT_ARG) $< -o $@

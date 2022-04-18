@@ -5,6 +5,7 @@
 
 #include <string>
 #include <map>
+#include <iostream>
 using namespace llvm;
 
 namespace {
@@ -19,6 +20,16 @@ public:
       int calls;
       int blocks;
       int insts;
+
+    Info(int args=0, int calls=0, int blocks=0,int insts=0): args(args), calls(calls), blocks(blocks), insts(insts){}
+
+    friend llvm::raw_ostream& operator<< (llvm::raw_ostream & stream, const Info& info){
+      stream << " Number of Arguments: "<< info.args << "\n";
+      stream << " Number of Calls: "<< info.calls << "\n";
+      stream << " Number OF BBs: "<< info.blocks << "\n";
+      stream << " Number of Instructions: "<< info.insts << "\n";
+      return stream;
+    }
   };
 
   std::map<std::string, Info> infos;
@@ -31,14 +42,21 @@ public:
   }
 
   virtual bool runOnModule(Module &M) override {
-    outs() << "CSCD70 Function Information Pass"
-           << "\n";
+    // outs() << "CSCD70 Function Information Pass"
+    //        << "\n";
 
     for(auto &func:M){
       auto name = func.getName().str();
       infos[name] = Info();
-
     }
+
+    for(auto &func:M){
+      iterate_function(func);
+    }
+
+    
+
+    show();
 
     /**
      * @todo(cscd70) Please complete this method.
@@ -59,15 +77,22 @@ public:
 
 //return instruction_num;
   int iterate_block(BasicBlock&block){
-    int inst_num = 0;
     for(auto&inst:block){
       if(CallInst* call_inst = dyn_cast<CallInst>(&inst)){
         auto name = call_inst->getCalledFunction()->getName().str();
         infos[name].calls+=1;
-        inst_num++;
       }
     }
-    return inst_num;
+    return block.size();
+  }
+
+  void show(){
+    // outs() << "args" << " " << "calls" << " " << "blocks" << " " << "insts" << "\n";
+    for(auto &[name,info]:infos){
+      
+      outs() << " Function Name: " << name << "\n";
+      outs() << info << "\n";
+    }
   }
 }; // class FunctionInfo
 
