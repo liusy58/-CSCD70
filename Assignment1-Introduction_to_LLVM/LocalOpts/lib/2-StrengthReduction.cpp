@@ -58,13 +58,18 @@ public:
           auto CanStrengthReduction = canStrengthReduction(Inst);
           if(CanStrengthReduction.first != -1){
             Value* V = CanStrengthReduction.second;
-            auto &context = V->getContext();
-            Value * V2 = ConstantInt::get(IntegerType::get(context,64), (uint64_t)CanStrengthReduction.first/*value*/, false);
+            auto &Context = V->getContext();
+            Value * V2 = ConstantInt::get(IntegerType::get(Context,32), (uint64_t)CanStrengthReduction.first/*value*/, false);
             ReplaceInstWithInst(Inst.getParent()->getInstList(), InstIter,
                     BinaryOperator::Create(llvm::Instruction::BinaryOps::Shl, V, V2));
+            Changed = true;
+            break;
           }
         }
       }
+    }
+    for(auto &BB:F){ 
+      BB.print(outs());
     }
     // outs() << "here is also ok\n";
     return ChangeInstruction; 
