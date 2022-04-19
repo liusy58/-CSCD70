@@ -62,6 +62,7 @@ public:
             Value * V2 = ConstantInt::get(IntegerType::get(Context,32), (uint64_t)CanStrengthReduction.first/*value*/, false);
             ReplaceInstWithInst(Inst.getParent()->getInstList(), InstIter,
                     BinaryOperator::Create(llvm::Instruction::BinaryOps::Shl, V, V2));
+            ChangeInstruction = true;        
             Changed = true;
             break;
           }
