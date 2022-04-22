@@ -52,14 +52,18 @@ public:
         ++InstIter;
         auto IsConstantContained = isConstantContained(Inst);
         if(IsConstantContained.second != nullptr){
+          // Inst.print(outs());
+          // outs() << "   ";
           Value *Operand = IsConstantContained.first;
           auto Value = IsConstantContained.second->getValue();
           if(Inst.getOpcode() == Instruction::Sub){
             Value = -Value;
           }   
           auto Offset = Value;
-          while(Offset != 0 && dyn_cast<Argument>(Operand) == nullptr){
+          while(Offset != 0 && dyn_cast<Instruction>(Operand) != nullptr){
             auto *NewInst = dyn_cast<Instruction>(Operand);
+            // NewInst->print(outs());
+            // outs() << "--   ";
             auto IsConstantContained = isConstantContained(*NewInst);
             if(IsConstantContained.second != nullptr){
               Operand = IsConstantContained.first;
@@ -77,8 +81,8 @@ public:
             ChangeInstruction = true;
             auto Iter = Inst.getIterator();
             ReplaceInstWithValue(BB.getInstList(), Iter, Operand);
-            break;
           }
+          // outs() << "\n";
         }
       }
     }

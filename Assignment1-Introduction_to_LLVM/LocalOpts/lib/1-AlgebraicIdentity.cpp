@@ -95,28 +95,6 @@ public:
       }
     }
   }
-    // bool Changed = true;
-    // while(Changed){
-    //   Changed = false;
-    //   for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
-    //     auto &BB = *BBIter;
-    //     for(auto InstIter = BB.begin(); InstIter != BB.end(); InstIter++){
-    //       auto &Inst = *InstIter;
-    //       auto Res = isAlgebracIdentity(Inst);
-    //       auto IsAlgebrac = Res.first;
-    //       Value * V = Res.second;
-    //       if(IsAlgebrac){
-    //         ReplaceInstWithValue(BB.getInstList(), InstIter, V);
-    //         ChangeInstruction = Changed = true;
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }
-    // for(auto &BB:F){
-    //   BB.print(outs());
-    // }
-    // outs() << "here is also ok\n";
     return ChangeInstruction; 
   }
 }; // class AlgebraicIdentity

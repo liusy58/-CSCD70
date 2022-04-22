@@ -82,40 +82,6 @@ public:
       }
     }
     return ChangeInstruction;
-
-
-
-
-    // // std::queue<std::tuple<Instruction *, BasicBlock&, Value*>>Worklist;
-    // bool Changed = true;
-    // while(Changed){
-    //   Changed = false;
-    //   for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
-    //     auto &BB = *BBIter;
-    //     for(auto InstIter = BB.begin(); InstIter != BB.end(); InstIter++){
-    //       auto &Inst = *InstIter;
-    //       auto CanStrengthReduction = canStrengthReduction(Inst);
-    //       if(CanStrengthReduction.first != -1){
-    //         Value* V = CanStrengthReduction.second;
-    //         auto &Context = V->getContext();
-    //         Value * V2 = ConstantInt::get(IntegerType::get(Context,32), (uint64_t)CanStrengthReduction.first/*value*/, false);
-            
-            
-            
-    //         ReplaceInstWithInst(Inst.getParent()->getInstList(), InstIter,
-    //                 BinaryOperator::Create(llvm::Instruction::BinaryOps::Shl, V, V2));
-    //         ChangeInstruction = true;        
-    //         Changed = true;
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }
-    // for(auto &BB:F){ 
-    //   BB.print(outs());
-    // }
-    // outs() << "here is also ok\n";
-    return ChangeInstruction; 
   }
 }; // class StrengthReduction
 
