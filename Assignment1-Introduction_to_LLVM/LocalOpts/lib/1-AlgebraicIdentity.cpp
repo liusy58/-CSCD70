@@ -42,6 +42,17 @@ public:
         }
       }
     }
+
+    if(Inst.getOpcode() == Instruction::Sub){
+      V = Inst.getOperand(0);
+      if (ConstantInt *C = dyn_cast<ConstantInt>(Inst.getOperand(1))){
+          if(C->getValue() == 0){
+            IsAlgebracIdentity = true;
+          }
+        }
+    }
+
+
     if(Inst.getOpcode() == Instruction::Mul){
       for (auto *Iter = Inst.op_begin(); Iter != Inst.op_end(); ++Iter) {
         Value *Operand = *Iter;
@@ -55,31 +66,56 @@ public:
       }
     }
 
+    if(Inst.getOpcode() == Instruction::SDiv || Inst.getOpcode() == Instruction::UDiv){
+      V = Inst.getOperand(0);
+      if (ConstantInt *C = dyn_cast<ConstantInt>(Inst.getOperand(1))){
+          if(C->getValue() == 1){
+            IsAlgebracIdentity = true;
+          }
+        }
+    }
     return {IsAlgebracIdentity, V};
   }
   virtual bool runOnFunction(Function &F) override {
     bool ChangeInstruction = false;
 
     // std::queue<std::tuple<Instruction *, BasicBlock&, Value*>>Worklist;
-    bool Changed = true;
-    while(Changed){
-      Changed = false;
-      for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
-        auto &BB = *BBIter;
-        for(auto InstIter = BB.begin(); InstIter != BB.end(); InstIter++){
-          auto &Inst = *InstIter;
-          auto Res = isAlgebracIdentity(Inst);
-          auto IsAlgebrac = Res.first;
-          Value * V = Res.second;
-          if(IsAlgebrac){
-            ReplaceInstWithValue(BB.getInstList(), InstIter, V);
-            BB.print(outs());
-            Changed = true;
-            break;
-          }
-        }
+  for(BasicBlock &BB : F) {
+    auto InstIter = BB.begin();
+    while(InstIter != BB.end()) {
+      Instruction& Inst = *InstIter;
+      auto Res = isAlgebracIdentity(Inst);
+      bool IsAlgebrac = Res.first;
+      ++InstIter;
+      if(IsAlgebrac){
+        Value * V = Res.second;
+        auto Iter = Inst.getIterator();
+        ReplaceInstWithValue(BB.getInstList(), Iter, V);
+        ChangeInstruction = true;
       }
     }
+  }
+    // bool Changed = true;
+    // while(Changed){
+    //   Changed = false;
+    //   for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
+    //     auto &BB = *BBIter;
+    //     for(auto InstIter = BB.begin(); InstIter != BB.end(); InstIter++){
+    //       auto &Inst = *InstIter;
+    //       auto Res = isAlgebracIdentity(Inst);
+    //       auto IsAlgebrac = Res.first;
+    //       Value * V = Res.second;
+    //       if(IsAlgebrac){
+    //         ReplaceInstWithValue(BB.getInstList(), InstIter, V);
+    //         ChangeInstruction = Changed = true;
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
+    // for(auto &BB:F){
+    //   BB.print(outs());
+    // }
     // outs() << "here is also ok\n";
     return ChangeInstruction; 
   }

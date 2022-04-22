@@ -21,14 +21,12 @@ public:
    * @todo(cscd70) Please complete the methods below.
    */
   virtual void getAnalysisUsage(AnalysisUsage &AU) const override {
-
+    
   }
 
 
   std::pair<Value*, ConstantInt*> isConstantContained(Instruction &Inst){
-    outs() << "Now deal with Inst ";
-    Inst.print(outs());
-    outs() << "\n";
+    // Inst.print(outs());
     Value* V = nullptr;
     ConstantInt *Const = nullptr;
     if(Inst.getOpcode() == Instruction::Add || Inst.getOpcode() == Instruction::Sub){
@@ -56,43 +54,32 @@ public:
           auto &Inst = *InstIter;
           auto IsConstantContained = isConstantContained(Inst);
           if(IsConstantContained.second != nullptr){
-            outs() << "New instruction   ";
-            Inst.print(outs());
-            outs() << "\n";
             Value *Operand = IsConstantContained.first;
             auto Value = IsConstantContained.second->getValue();
             if(Inst.getOpcode() == Instruction::Sub){
               Value = -Value;
             }   
             auto Offset = Value;
-
             while(Offset != 0 && dyn_cast<Argument>(Operand) == nullptr){
-              outs() << "Offset = ";
-              Offset.print(outs(),true);
-              outs()<< "\n";
-              outs()<< "Operand : ";
-              Operand->print(outs());
-              outs()<< "\n";
               auto *NewInst = dyn_cast<Instruction>(Operand);
               auto IsConstantContained = isConstantContained(*NewInst);
               if(IsConstantContained.second != nullptr){
                 Operand = IsConstantContained.first;
                 Value = IsConstantContained.second->getValue();
                 if(NewInst->getOpcode() == Instruction::Sub){
-                  outs() << "here is ok -- \n";
                   Offset -=  Value;
                 } else {
                   Offset +=  Value;
-                  outs() << "here is ok\n";
                 }
               }else {
-                outs() << "IsConstantContained.second == null \n";
                 break;
               }
             }
             if(Offset == 0){
               ChangeInstruction = Changed = true;
               ReplaceInstWithValue(BB.getInstList(), InstIter, Operand);
+              // BB.print(outs());
+              // outs()<< "\n";
               break;
             }
           }
@@ -102,12 +89,11 @@ public:
     }
   
 
-  for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
-    auto &BB = *BBIter;
-    BB.print(outs());
-  }
-
-    return ChangeInstruction; 
+  // for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
+  //   auto &BB = *BBIter;
+  //   BB.print(outs());
+  // }
+  return ChangeInstruction; 
   }
 }; // class MultiInstOpt
 

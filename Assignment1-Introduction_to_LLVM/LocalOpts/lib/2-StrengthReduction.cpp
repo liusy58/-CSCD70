@@ -40,6 +40,15 @@ public:
       }
     }
 
+    if(Inst.getOpcode() == Instruction::SDiv || Inst.getOpcode() == Instruction::UDiv){
+      V = Inst.getOperand(0);
+      if (ConstantInt *C = dyn_cast<ConstantInt>(Inst.getOperand(1))){
+          if(C->getValue() .isPowerOf2()){
+            LogBase2 = C->getValue().exactLogBase2();
+          }
+        }
+    }
+
     return {LogBase2 ,V};
   }
 
@@ -47,31 +56,64 @@ public:
   virtual bool runOnFunction(Function &F) override { 
     bool ChangeInstruction = false;
 
-    // std::queue<std::tuple<Instruction *, BasicBlock&, Value*>>Worklist;
-    bool Changed = true;
-    while(Changed){
-      Changed = false;
-      for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
-        auto &BB = *BBIter;
-        for(auto InstIter = BB.begin(); InstIter != BB.end(); InstIter++){
-          auto &Inst = *InstIter;
-          auto CanStrengthReduction = canStrengthReduction(Inst);
-          if(CanStrengthReduction.first != -1){
-            Value* V = CanStrengthReduction.second;
-            auto &Context = V->getContext();
-            Value * V2 = ConstantInt::get(IntegerType::get(Context,32), (uint64_t)CanStrengthReduction.first/*value*/, false);
-            ReplaceInstWithInst(Inst.getParent()->getInstList(), InstIter,
-                    BinaryOperator::Create(llvm::Instruction::BinaryOps::Shl, V, V2));
-            ChangeInstruction = true;        
-            Changed = true;
-            break;
+    for(BasicBlock &BB : F) {
+      auto InstIter = BB.begin();
+      while(InstIter != BB.end()) {
+        Instruction& Inst = *InstIter;
+        auto CanStrengthReduction = canStrengthReduction(Inst);
+        ++InstIter;
+        if(CanStrengthReduction.first != -1){
+          Value* V = CanStrengthReduction.second;
+          auto &Context = V->getContext();
+          Value * V2 = ConstantInt::get(IntegerType::get(Context,32), (uint64_t)CanStrengthReduction.first/*value*/, false);
+          auto Iter = Inst.getIterator();
+          if(Inst.getOpcode() == Instruction::Mul){
+            ReplaceInstWithInst(Inst.getParent()->getInstList(),Iter ,
+                      BinaryOperator::Create(llvm::Instruction::BinaryOps::Shl, V, V2));
+          }else if(Inst.getOpcode() == Instruction::SDiv){
+            ReplaceInstWithInst(Inst.getParent()->getInstList(), Iter,
+                      BinaryOperator::Create(llvm::Instruction::BinaryOps::AShr, V, V2));
+          }else if(Inst.getOpcode() == Instruction::UDiv){
+            ReplaceInstWithInst(Inst.getParent()->getInstList(), Iter,
+                      BinaryOperator::Create(llvm::Instruction::BinaryOps::LShr, V, V2));
           }
+          ChangeInstruction = true;
         }
       }
     }
-    for(auto &BB:F){ 
-      BB.print(outs());
-    }
+    return ChangeInstruction;
+
+
+
+
+    // // std::queue<std::tuple<Instruction *, BasicBlock&, Value*>>Worklist;
+    // bool Changed = true;
+    // while(Changed){
+    //   Changed = false;
+    //   for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
+    //     auto &BB = *BBIter;
+    //     for(auto InstIter = BB.begin(); InstIter != BB.end(); InstIter++){
+    //       auto &Inst = *InstIter;
+    //       auto CanStrengthReduction = canStrengthReduction(Inst);
+    //       if(CanStrengthReduction.first != -1){
+    //         Value* V = CanStrengthReduction.second;
+    //         auto &Context = V->getContext();
+    //         Value * V2 = ConstantInt::get(IntegerType::get(Context,32), (uint64_t)CanStrengthReduction.first/*value*/, false);
+            
+            
+            
+    //         ReplaceInstWithInst(Inst.getParent()->getInstList(), InstIter,
+    //                 BinaryOperator::Create(llvm::Instruction::BinaryOps::Shl, V, V2));
+    //         ChangeInstruction = true;        
+    //         Changed = true;
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
+    // for(auto &BB:F){ 
+    //   BB.print(outs());
+    // }
     // outs() << "here is also ok\n";
     return ChangeInstruction; 
   }

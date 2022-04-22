@@ -1,11 +1,12 @@
-#include <llvm/IR/Module.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/IR/Module.h>
 #include <llvm/Pass.h>
 #include <llvm/Support/raw_ostream.h>
 
-#include <string>
-#include <map>
 #include <iostream>
+#include <map>
+#include <string>
+
 using namespace llvm;
 
 namespace {
@@ -16,23 +17,23 @@ public:
 
   class Info{
     public:
-      int args;
-      int calls;
-      int blocks;
-      int insts;
+      int Args;
+      int Calls;
+      int Blocks;
+      int Insts;
 
-    Info(int args=0, int calls=0, int blocks=0,int insts=0): args(args), calls(calls), blocks(blocks), insts(insts){}
+    Info(int Args=0, int Calls=0, int Blocks=0,int Insts=0): Args(Args), Calls(Calls), Blocks(Blocks), Insts(Insts){}
 
-    friend llvm::raw_ostream& operator<< (llvm::raw_ostream & stream, const Info& info){
-      stream << " Number of Arguments: "<< info.args << "\n";
-      stream << " Number of Calls: "<< info.calls << "\n";
-      stream << " Number OF BBs: "<< info.blocks << "\n";
-      stream << " Number of Instructions: "<< info.insts << "\n";
-      return stream;
+    friend llvm::raw_ostream& operator<< (llvm::raw_ostream & Stream, const Info& Info){
+      Stream << " Number of Arguments: "<< Info.Args << "\n";
+      Stream << " Number of Calls: "<< Info.Calls << "\n";
+      Stream << " Number OF BBs: "<< Info.Blocks << "\n";
+      Stream << " Number of Instructions: "<< Info.Insts << "\n";
+      return Stream;
     }
   };
 
-  std::map<std::string, Info> infos;
+  std::map<std::string, Info> Infos;
 
   FunctionInfo() : ModulePass(ID) {}
 
@@ -45,16 +46,15 @@ public:
     // outs() << "CSCD70 Function Information Pass"
     //        << "\n";
 
-    for(auto &func:M){
-      auto name = func.getName().str();
-      infos[name] = Info();
+    for(auto &Func:M){
+      auto Name = Func.getName().str();
+      Infos[Name] = Info();
     }
 
-    for(auto &func:M){
-      iterate_function(func);
+    for(auto &Func:M){
+      iterateFunction(Func);
     }
 
-    
 
     show();
 
@@ -65,33 +65,33 @@ public:
     return false;
   }
 
-  void iterate_function(Function&func){
-    auto name = func.getName().str();
-    infos[name].args = func.arg_size();
-    infos[name].blocks = func.getBasicBlockList().size();
-    for(auto&bb:func){
-      infos[name].insts += iterate_block(bb);
+  void iterateFunction(Function&Func){
+    auto Name = Func.getName().str();
+    Infos[Name].Args = Func.arg_size();
+    Infos[Name].Blocks = Func.getBasicBlockList().size();
+    for(auto&BB:Func){
+      Infos[Name].Insts += iterateBlock(BB);
     }
   }
 
 
 //return instruction_num;
-  int iterate_block(BasicBlock&block){
-    for(auto&inst:block){
-      if(CallInst* call_inst = dyn_cast<CallInst>(&inst)){
-        auto name = call_inst->getCalledFunction()->getName().str();
-        infos[name].calls+=1;
+  int iterateBlock(BasicBlock&Block){
+    for(auto&Inst:Block){
+      if(CallInst* Call = dyn_cast<CallInst>(&Inst)){
+        auto Name = Call->getCalledFunction()->getName().str();
+        Infos[Name].Calls+=1;
       }
     }
-    return block.size();
+    return Block.size();
   }
 
   void show(){
     // outs() << "args" << " " << "calls" << " " << "blocks" << " " << "insts" << "\n";
-    for(auto &[name,info]:infos){
+    for(auto &[Name,Info]:Infos){
       
-      outs() << " Function Name: " << name << "\n";
-      outs() << info << "\n";
+      outs() << " Function Name: " << Name << "\n";
+      outs() << Info << "\n";
     }
   }
 }; // class FunctionInfo
