@@ -21,7 +21,7 @@ public:
    * @todo(cscd70) Please complete the methods below.
    */
   virtual void getAnalysisUsage(AnalysisUsage &AU) const override {
-    
+
   }
 
 
@@ -44,55 +44,46 @@ public:
 
 
   virtual bool runOnFunction(Function &F) override { 
-    bool ChangeInstruction = false; 
-    bool Changed = true;
-    while(Changed){
-      Changed = false;
-      for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
-        auto &BB = *BBIter;
-        for(auto InstIter = BB.begin(); InstIter != BB.end(); InstIter++){
-          auto &Inst = *InstIter;
-          auto IsConstantContained = isConstantContained(Inst);
-          if(IsConstantContained.second != nullptr){
-            Value *Operand = IsConstantContained.first;
-            auto Value = IsConstantContained.second->getValue();
-            if(Inst.getOpcode() == Instruction::Sub){
-              Value = -Value;
-            }   
-            auto Offset = Value;
-            while(Offset != 0 && dyn_cast<Argument>(Operand) == nullptr){
-              auto *NewInst = dyn_cast<Instruction>(Operand);
-              auto IsConstantContained = isConstantContained(*NewInst);
-              if(IsConstantContained.second != nullptr){
-                Operand = IsConstantContained.first;
-                Value = IsConstantContained.second->getValue();
-                if(NewInst->getOpcode() == Instruction::Sub){
-                  Offset -=  Value;
-                } else {
-                  Offset +=  Value;
-                }
-              }else {
-                break;
+    bool ChangeInstruction = false;
+    for(BasicBlock &BB : F) {
+      auto InstIter = BB.begin();
+      while(InstIter != BB.end()) {
+        auto &Inst = *InstIter;
+        ++InstIter;
+        auto IsConstantContained = isConstantContained(Inst);
+        if(IsConstantContained.second != nullptr){
+          Value *Operand = IsConstantContained.first;
+          auto Value = IsConstantContained.second->getValue();
+          if(Inst.getOpcode() == Instruction::Sub){
+            Value = -Value;
+          }   
+          auto Offset = Value;
+          while(Offset != 0 && dyn_cast<Argument>(Operand) == nullptr){
+            auto *NewInst = dyn_cast<Instruction>(Operand);
+            auto IsConstantContained = isConstantContained(*NewInst);
+            if(IsConstantContained.second != nullptr){
+              Operand = IsConstantContained.first;
+              Value = IsConstantContained.second->getValue();
+              if(NewInst->getOpcode() == Instruction::Sub){
+                Offset -=  Value;
+              } else {
+                Offset +=  Value;
               }
-            }
-            if(Offset == 0){
-              ChangeInstruction = Changed = true;
-              ReplaceInstWithValue(BB.getInstList(), InstIter, Operand);
-              // BB.print(outs());
-              // outs()<< "\n";
+            }else {
               break;
             }
           }
+          if(Offset == 0){
+            ChangeInstruction = true;
+            auto Iter = Inst.getIterator();
+            ReplaceInstWithValue(BB.getInstList(), Iter, Operand);
+            break;
+          }
         }
-        if(Changed){break;}
       }
     }
-  
 
-  // for(auto BBIter = F.begin(); BBIter != F.end(); BBIter++){
-  //   auto &BB = *BBIter;
-  //   BB.print(outs());
-  // }
+
   return ChangeInstruction; 
   }
 }; // class MultiInstOpt
