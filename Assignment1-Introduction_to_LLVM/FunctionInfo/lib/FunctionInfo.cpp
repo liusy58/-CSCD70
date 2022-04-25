@@ -43,8 +43,10 @@ public:
   }
 
   virtual bool runOnModule(Module &M) override {
-    // outs() << "CSCD70 Function Information Pass"
-    //        << "\n";
+    outs() << "CSCD70 Function Information Pass"
+           << "\n";
+
+
 
     for(auto &Func:M){
       auto Name = Func.getName().str();

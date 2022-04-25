@@ -18,7 +18,14 @@
 ; }
 define i32 @foo(i32 %0) {
 ; CHECK-LABEL: define i32 @foo(i32 %0) {
-; @todo(cscd70) Please complete the CHECK directives.
+; CHECK:%2 = shl i32 %0, 4
+; CHECK-NEXT:%3 = mul nsw i32 %2, %0
+; CHECK-NEXT:%4 = sdiv i32 %3, %0
+; CHECK-NEXT:%5 = sdiv i32 %3, 10
+; CHECK-NEXT:%6 = mul nsw i32 54, %4
+; CHECK-NEXT:%7 = ashr i32 %5, 7
+; CHECK-NEXT:%8 = sdiv i32 %6, 54
+; CHECK-NEXT:ret i32 %8
   %2 = add nsw i32 %0, 0
   %3 = mul nsw i32 %2, 16
   %4 = mul nsw i32 %3, %2
@@ -31,3 +38,5 @@ define i32 @foo(i32 %0) {
   %11 = sub nsw i32 %9, 0
   ret i32 %11
 }
+
+
