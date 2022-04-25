@@ -54,6 +54,8 @@
 <p>Please click on the badges above for the assignment handout and the invitation
 to GitHub Classroom. TODO items have been marked using <code class="docutils literal notranslate"><span class="pre">todo(cscd70)</span></code> in the source code.
 These include both the optimization passes <strong>AND</strong> the test cases.</p>
+<p>opt-12 -S -load build/lib/libLocalOpts.so -algebraic-identity -strength-reduction -multi-inst-opt test/foo.ll -o  new_foo.ll</p>
+<p>$(llvm-config-12 –bindir)/FileCheck –match-full-lines –color ./test/foo.ll –input-file=./new_foo.ll</p>
 </section>
 
 
