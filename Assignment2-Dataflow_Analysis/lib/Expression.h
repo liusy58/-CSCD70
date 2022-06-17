@@ -19,7 +19,26 @@ struct Expression {
   /**
    * @todo(cscd70) Please complete the comparator.
    */
-  bool operator==(const Expression &Expr) const { return false; }
+  bool operator==(const Expression &Expr) const {  
+    if(is_commutative()){
+      return (LHS == Expr.LHS && RHS == Expr.RHS) || (LHS == Expr.RHS && RHS == Expr.LHS);
+    }
+    return (LHS == Expr.LHS && RHS == Expr.RHS); 
+  }
+
+
+  bool is_commutative() const{
+    return (Opcode == Instruction::BinaryOps::Add)
+            || (Opcode == Instruction::BinaryOps::FAdd)
+            || (Opcode == Instruction::BinaryOps::FMul)
+            || (Opcode == Instruction::BinaryOps::And)
+            || (Opcode == Instruction::BinaryOps::Or)
+            || (Opcode == Instruction::BinaryOps::Xor);
+  }
+
+  bool contains(Value* V){
+    return LHS == V || RHS == V;
+  }
 };
 
 inline raw_ostream &operator<<(raw_ostream &Outs, const Expression &Expr) {

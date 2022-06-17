@@ -28,6 +28,17 @@ public:
            << "* Instruction-Domain Value Mapping" << "\n"
            << "**************************************************" << "\n";
     // clang-format on
+    for(auto &BB:F){
+      for(auto &Inst:BB){
+        for(auto Iter = Inst.op_begin(); Iter != Inst.op_end(); ++Iter){
+          Value *V = *Iter;
+          if(isa<Instruction>(V) || isa<Argument>(V)){
+            
+          } 
+        }
+      }
+    }
+    
 
     return false;
   }
