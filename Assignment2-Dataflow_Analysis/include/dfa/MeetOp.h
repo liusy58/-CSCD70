@@ -26,12 +26,18 @@ public:
   virtual DomainVal_t operator()(const DomainVal_t &LHS,
                                  const DomainVal_t &RHS) const override {
 
-    return DomainVal_t();
+    auto Res = DomainVal_t(LHS);
+    for(long unsigned int Index = 0; Index < RHS.size(); ++Index){
+      Res[Index] = RHS[Index] && LHS[Index];
+    }
+    return Res;
   }
   virtual DomainVal_t top(const size_t DomainSize) const override {
 
-    return DomainVal_t(DomainSize, false);
+    return DomainVal_t(DomainSize, true);
   }
+
+
 };
 
 } // namespace dfa

@@ -20,14 +20,14 @@ struct Expression {
    * @todo(cscd70) Please complete the comparator.
    */
   bool operator==(const Expression &Expr) const {  
-    if(is_commutative()){
+    if(isCommutative()){
       return (LHS == Expr.LHS && RHS == Expr.RHS) || (LHS == Expr.RHS && RHS == Expr.LHS);
     }
     return (LHS == Expr.LHS && RHS == Expr.RHS); 
   }
 
 
-  bool is_commutative() const{
+  bool isCommutative() const{
     return (Opcode == Instruction::BinaryOps::Add)
             || (Opcode == Instruction::BinaryOps::FAdd)
             || (Opcode == Instruction::BinaryOps::FMul)

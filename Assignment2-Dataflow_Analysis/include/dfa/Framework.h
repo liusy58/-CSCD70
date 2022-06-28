@@ -131,7 +131,8 @@ private:
    *****************************************************************************/
 protected:
   virtual DomainVal_t getBoundaryVal(const BasicBlock &BB) const {
-    MeetOperands_t MeetOperands = getMeetOperands(BB);
+    
+    auto MeetOperands = getMeetOperands(BB);
     if (MeetOperands.begin() == MeetOperands.end()) {
       // If the list of meet operands is empty, then we are at the boundary,
       // hence obtain the BC.
@@ -141,6 +142,10 @@ protected:
   }
 
 private:
+  DomainVal_t getInstDomainValMap(const Instruction*Inst) const{
+    return InstDomainValMap.at(Inst);
+  }
+
   /**
    * @todo(cscd70) Please provide an instantiation for the backward pass.
    */
@@ -150,9 +155,37 @@ private:
     /**
      * @todo(cscd70) Please complete the definition of this method.
      */
-
+    for (auto It = pred_begin(&BB), Et = pred_end(&BB); It != Et; ++It){
+      const BasicBlock* Predecessor = *It;
+      const Instruction& LastInst = Predecessor->back();
+      const DomainVal_t DomainVal = getInstDomainValMap(&LastInst);
+      Operands.push_back(DomainVal);
+    }
     return Operands;
   }
+
+  METHOD_ENABLE_IF_DIRECTION(Direction::kBackward, MeetOperands_t)
+  getMeetOperands(const BasicBlock &BB) const {
+    MeetOperands_t Operands;
+    /**
+     * @todo(cscd70) Please complete the definition of this method.
+     */
+    for (auto It = pred_begin(&BB), Et = pred_end(&BB); It != Et; ++It){
+      const BasicBlock* Predecessor = *It;
+      const Instruction& LastInst = Predecessor->back();
+      DomainVal_t DomainVal = InstDomainValMap[&LastInst];
+      Operands.push_back(DomainVal);
+    }
+    return Operands;
+  }
+
+
+  // METHOD_ENABLE_IF_DIRECTION(Direction::kForward, DomainVal_t)
+  // getBasicBlockOut(const BasicBlock &BB) const {
+  //   auto LastInst = BB.
+  //   return InstDomainValMap[];
+  // }
+
   /**
    * @brief Boundary Condition
    */
@@ -164,8 +197,13 @@ private:
     /**
      * @todo(cscd70) Please complete the defintion of this method.
      */
-
-    return DomainVal_t(Domain.size());
+    TMeetOp MeetOp;
+    DomainVal_t FirstVal(MeetOperands[0]);
+    for(long unsigned int I = 1; I < MeetOperands.size(); ++I){
+      DomainVal_t SencondVal = MeetOperands[I];
+      FirstVal = MeetOp(FirstVal, SencondVal);
+    }
+    return FirstVal;
   }
   /*****************************************************************************
    * Transfer Function
@@ -223,7 +261,21 @@ private:
    *
    * @todo(cscd70) Please implement this method.
    */
-  bool traverseCFG(const Function &F) { return false; }
+  bool traverseCFG(const Function &F) { 
+    bool Changed = false;
+    auto BBTraversalOrder = getBBTraversalOrder(F);
+    for(auto &BB : BBTraversalOrder){
+      auto MeetOperands = getMeetOperands(BB);
+      auto In = getBoundaryVal(BB);
+      for(auto Iter = BB.begin(); Iter != BB.end(); ++Iter){
+        const Instruction &Inst = *Iter;
+        auto Out = InstDomainValMap[&Inst];
+        Changed |= transferFunc(Inst,In,Out);
+        In = InstDomainValMap[&Inst];
+      }
+    }
+    return Changed;
+   }
   /*****************************************************************************
    * Domain Initialization
    *****************************************************************************/
