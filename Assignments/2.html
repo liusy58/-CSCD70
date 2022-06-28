@@ -58,6 +58,8 @@ These include both the optimization passes <strong>AND</strong> the test cases.<
 <section id="procedure">
 <h2>Procedure<a class="headerlink" href="#procedure" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt --rm --name cscd70_a1 cscd70:2021S
+<span class="nb">cd</span> /mnt/Assignment2-Dataflow_Analysis/build
+opt-12 -load lib/libDFA.so -avail-expr ./test/AvailExpr.ll
 </pre></div>
 </div>
 </section>

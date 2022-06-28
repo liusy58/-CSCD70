@@ -11,6 +11,6 @@ These include both the optimization passes **AND** the test cases.
 
 ```bash
 docker run -it -v $(pwd):/mnt --rm --name cscd70_a1 cscd70:2021S
-
-
+cd /mnt/Assignment2-Dataflow_Analysis/build
+opt-12 -load lib/libDFA.so -avail-expr ./test/AvailExpr.ll
 ```
