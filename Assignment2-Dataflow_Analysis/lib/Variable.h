@@ -3,7 +3,7 @@
 #include <llvm/IR/Value.h>
 #include <llvm/Support/raw_ostream.h>
 
-using namespace dfa;
+// using namespace dfa;
 using namespace llvm;
 
 /**

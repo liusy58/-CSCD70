@@ -33,6 +33,13 @@ struct FrameworkTypeSupport<Direction::kForward> {
   typedef iterator_range<BasicBlock::const_iterator> InstTraversalConstRange;
 };
 
+
+template <> //
+struct FrameworkTypeSupport<Direction::kBackward> {
+  typedef iterator_range<Function::const_iterator> BBTraversalConstRange;
+  typedef iterator_range<BasicBlock::const_iterator> InstTraversalConstRange;
+};
+
 /**
  * @todo(cscd70) Please provide an instantiation for the backward pass.
  */
@@ -113,6 +120,21 @@ private:
     printDomainWithMask(InstDomainValMap.at(&Inst));
     errs() << "\n";
   }
+
+  METHOD_ENABLE_IF_DIRECTION(Direction::kBackward, void)
+  printInstDomainValMap(const Instruction &Inst) const {
+    const BasicBlock *const InstParent = Inst.getParent();
+    if (&Inst == &(InstParent->back())) {
+      errs() << "\t";
+      printDomainWithMask(getBoundaryVal(*InstParent));
+      errs() << "\n";
+    } // if (&Inst == &(*InstParent->begin()))
+    outs() << Inst << "\n";
+    errs() << "\t";
+    printDomainWithMask(InstDomainValMap.at(&Inst));
+    errs() << "\n";
+  }
+
   /**
    * @brief Dump, ∀inst ∈ F, the associated domain value.
    */
@@ -170,10 +192,10 @@ private:
     /**
      * @todo(cscd70) Please complete the definition of this method.
      */
-    for (auto It = pred_begin(&BB), Et = pred_end(&BB); It != Et; ++It){
+    for (auto It = succ_begin(&BB), Et = succ_end(&BB); It != Et; ++It){
       const BasicBlock* Predecessor = *It;
-      const Instruction& LastInst = Predecessor->back();
-      DomainVal_t DomainVal = InstDomainValMap[&LastInst];
+      const Instruction& FisrtInst = Predecessor->front();
+      const DomainVal_t DomainVal = getInstDomainValMap(&FisrtInst);
       Operands.push_back(DomainVal);
     }
     return Operands;
@@ -211,6 +233,7 @@ private:
 protected:
   static bool diff(const DomainVal_t &LHS, const DomainVal_t &RHS) {
     if (LHS.size() != RHS.size()) {
+      errs() << "LHS.size()" << LHS.size() << "RHS.size()" << RHS.size() << "\n";
       assert(false && "Size of domain values has to be the same");
     }
     for (size_t Idx = 0; Idx < LHS.size(); ++Idx) {
@@ -245,6 +268,13 @@ private:
   getBBTraversalOrder(const Function &F) const {
     return make_range(F.begin(), F.end());
   }
+
+
+  METHOD_ENABLE_IF_DIRECTION(Direction::kBackward, BBTraversalConstRange)
+  getBBTraversalOrder(const Function &F) const {
+    auto &BBs = F.getBasicBlockList();
+    return make_range(BBs.rbegin(),BBs.rend());
+  }
   /**
    * @brief Return the traversal order of the instructions.
    *
@@ -254,6 +284,19 @@ private:
   getInstTraversalOrder(const BasicBlock &BB) const {
     return make_range(BB.begin(), BB.end());
   }
+
+  METHOD_ENABLE_IF_DIRECTION(Direction::kBackward, InstTraversalConstRange)
+  getInstTraversalOrder(const BasicBlock &BB) const {
+    errs()<< BB ;
+    auto &Ins = BB.getInstList();
+    for(auto Iter= Ins.rbegin(); Iter != Ins.rend(); ++Iter){
+      
+      errs() << *Iter  << "||";
+    }
+
+    return make_range(Ins.rbegin(), Ins.rend());
+    // return BB.begin();
+  }
   /**
    * @brief  Traverse through the CFG and update instruction-domain value
    *         mapping.
@@ -261,17 +304,58 @@ private:
    *
    * @todo(cscd70) Please implement this method.
    */
-  bool traverseCFG(const Function &F) { 
+
+  METHOD_ENABLE_IF_DIRECTION(Direction::kBackward, bool)  
+  traverseCFG(const Function &F) { 
+    errs() << "in traverseCFG\n";
     bool Changed = false;
-    auto BBTraversalOrder = getBBTraversalOrder(F);
-    for(auto &BB : BBTraversalOrder){
+    // auto BBTraversalOrder = getBBTraversalOrder(F);
+    auto &BBs = F.getBasicBlockList();
+
+    for(auto BBIter = BBs.rbegin(); BBIter != BBs.rend(); ++BBIter){
+      auto &BB = * BBIter;
       auto MeetOperands = getMeetOperands(BB);
       auto In = getBoundaryVal(BB);
-      for(auto Iter = BB.begin(); Iter != BB.end(); ++Iter){
-        const Instruction &Inst = *Iter;
+      // auto InstTraversalOrder = getInstTraversalOrder(BB);
+      // for(auto &Inst:BB){
+      //   auto Out = InstDomainValMap[&Inst];
+      //   Changed |= transferFunc(Inst,In,Out);
+      //   In = InstDomainValMap[&Inst];
+      //   errs() << Inst << "\n";
+      // }
+
+      auto &Insts = BB.getInstList();
+      for(auto InstIter = Insts.rbegin(); InstIter != Insts.rend(); ++InstIter ){
+        auto &Inst = *InstIter;
         auto Out = InstDomainValMap[&Inst];
         Changed |= transferFunc(Inst,In,Out);
         In = InstDomainValMap[&Inst];
+        errs() << Inst << "\n";        
+      }
+    }
+    return Changed;
+   }
+
+
+
+
+  METHOD_ENABLE_IF_DIRECTION(Direction::kForward, bool)  
+  traverseCFG(const Function &F) { 
+    errs() << "in traverseCFG\n";
+    bool Changed = false;
+    
+    
+    for(auto &BB : F){
+      auto MeetOperands = getMeetOperands(BB);
+      auto In = getBoundaryVal(BB);
+      // auto InstTraversalOrder = getInstTraversalOrder(BB);
+      for(auto &Inst:BB){
+
+        auto Out = InstDomainValMap[&Inst];
+        Changed |= transferFunc(Inst,In,Out);
+        In = InstDomainValMap[&Inst];
+
+        errs() << Inst << "\n";
       }
     }
     return Changed;
@@ -303,6 +387,8 @@ protected:
     for (const auto &Inst : instructions(F)) {
       InstDomainValMap.emplace(&Inst, MeetOp.top(Domain.size()));
     }
+
+    printInstDomainValMap(F);
     // keep traversing until no changes have been made to the
     // instruction-domain value mapping
     while (traverseCFG(F)) {
