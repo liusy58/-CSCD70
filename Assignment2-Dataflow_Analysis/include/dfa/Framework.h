@@ -316,21 +316,12 @@ private:
       auto &BB = * BBIter;
       auto MeetOperands = getMeetOperands(BB);
       auto In = getBoundaryVal(BB);
-      // auto InstTraversalOrder = getInstTraversalOrder(BB);
-      // for(auto &Inst:BB){
-      //   auto Out = InstDomainValMap[&Inst];
-      //   Changed |= transferFunc(Inst,In,Out);
-      //   In = InstDomainValMap[&Inst];
-      //   errs() << Inst << "\n";
-      // }
-
       auto &Insts = BB.getInstList();
       for(auto InstIter = Insts.rbegin(); InstIter != Insts.rend(); ++InstIter ){
         auto &Inst = *InstIter;
         auto Out = InstDomainValMap[&Inst];
         Changed |= transferFunc(Inst,In,Out);
-        In = InstDomainValMap[&Inst];
-        errs() << Inst << "\n";        
+        In = InstDomainValMap[&Inst];  
       }
     }
     return Changed;
@@ -388,10 +379,11 @@ protected:
       InstDomainValMap.emplace(&Inst, MeetOp.top(Domain.size()));
     }
 
-    printInstDomainValMap(F);
+  
     // keep traversing until no changes have been made to the
     // instruction-domain value mapping
     while (traverseCFG(F)) {
+      printInstDomainValMap(F);
     }
     printInstDomainValMap(F);
     return false;
