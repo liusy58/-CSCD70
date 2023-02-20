@@ -122,17 +122,17 @@ private:
   }
 
   METHOD_ENABLE_IF_DIRECTION(Direction::kBackward, void)
-  printInstDomainValMap(const Instruction &Inst) const {
-    const BasicBlock *const InstParent = Inst.getParent();
-    if (&Inst == &(InstParent->back())) {
-      errs() << "\t";
-      printDomainWithMask(getBoundaryVal(*InstParent));
-      errs() << "\n";
-    } // if (&Inst == &(*InstParent->begin()))
-    outs() << Inst << "\n";
+  printInstDomainValMap(const Instruction &Inst) const {\
     errs() << "\t";
     printDomainWithMask(InstDomainValMap.at(&Inst));
     errs() << "\n";
+    outs() << Inst << "\n";
+    const BasicBlock *const InstParent = Inst.getParent();
+    if (&Inst == &(InstParent->back())) {
+        errs() << "\t";
+        printDomainWithMask(getBoundaryVal(*InstParent));
+        errs() << "\n";
+    }
   }
 
   /**
@@ -310,6 +310,8 @@ private:
     errs() << "in traverseCFG\n";
     bool Changed = false;
     // auto BBTraversalOrder = getBBTraversalOrder(F);
+
+
     auto &BBs = F.getBasicBlockList();
 
     for(auto BBIter = BBs.rbegin(); BBIter != BBs.rend(); ++BBIter){
@@ -319,7 +321,7 @@ private:
       auto &Insts = BB.getInstList();
       for(auto InstIter = Insts.rbegin(); InstIter != Insts.rend(); ++InstIter ){
         auto &Inst = *InstIter;
-        auto Out = InstDomainValMap[&Inst];
+        auto &Out = InstDomainValMap[&Inst];
         Changed |= transferFunc(Inst,In,Out);
         In = InstDomainValMap[&Inst];  
       }
@@ -341,11 +343,9 @@ private:
       auto In = getBoundaryVal(BB);
       // auto InstTraversalOrder = getInstTraversalOrder(BB);
       for(auto &Inst:BB){
-
         auto Out = InstDomainValMap[&Inst];
         Changed |= transferFunc(Inst,In,Out);
         In = InstDomainValMap[&Inst];
-
         errs() << Inst << "\n";
       }
     }

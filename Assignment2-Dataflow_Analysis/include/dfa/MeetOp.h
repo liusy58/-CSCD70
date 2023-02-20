@@ -49,7 +49,7 @@ public:
 
     auto Res = DomainVal_t(LHS);
     for(long unsigned int Index = 0; Index < RHS.size(); ++Index){
-      Res[Index] = RHS[Index] | LHS[Index];
+      Res[Index] = RHS[Index] || LHS[Index];
     }
     return Res;
   }
