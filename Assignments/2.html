@@ -4,16 +4,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Assignment 2 Dataflow Analysis &#8212; CSCD70 2021S documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Assignment 3 Loop Invariant Code Motion" href="3.html" />
@@ -57,9 +55,9 @@ to GitHub Classroom. TODO items have been marked using <code class="docutils lit
 These include both the optimization passes <strong>AND</strong> the test cases.</p>
 <section id="procedure">
 <h2>Procedure<a class="headerlink" href="#procedure" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -it -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt --rm --name cscd70_a1 cscd70:2021S
-<span class="nb">cd</span> /mnt/Assignment2-Dataflow_Analysis/build
-opt-12 -load lib/libDFA.so -avail-expr ./test/AvailExpr.ll
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt<span class="w"> </span>--rm<span class="w"> </span>--name<span class="w"> </span>cscd70_a1<span class="w"> </span>cscd70:2021S
+<span class="nb">cd</span><span class="w"> </span>/mnt/Assignment2-Dataflow_Analysis/build
+opt-12<span class="w"> </span>-load<span class="w"> </span>lib/libDFA.so<span class="w"> </span>-avail-expr<span class="w"> </span>./test/AvailExpr.ll
 </pre></div>
 </div>
 </section>
@@ -135,7 +133,7 @@ opt-12 -load lib/libDFA.so -avail-expr ./test/AvailExpr.ll
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, University of Toronto.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
     </div>
   </body>
 </html>

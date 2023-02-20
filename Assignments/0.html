@@ -4,16 +4,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Assignment 0 Introduction to Docker &#8212; CSCD70 2021S documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Assignment 1 Introduction to LLVM" href="1.html" />
@@ -109,8 +107,8 @@ making itself an ideal solution for software development.</p>
 components.</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build the docker image from file Dockerfile and tag (-t) it with name `cscd70:2021S`.</span>
-<span class="nb">cd</span> Assignment0-Introduction_to_Docker
-docker build . -t cscd70:2021S
+<span class="nb">cd</span><span class="w"> </span>Assignment0-Introduction_to_Docker
+docker<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>-t<span class="w"> </span>cscd70:2021S
 </pre></div>
 </div>
 </li>
@@ -120,8 +118,8 @@ docker build . -t cscd70:2021S
 containers can be created out of the same image.</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a container for the first assignment.</span>
-<span class="nb">cd</span> Assignment1-Introduction_to_LLVM/FunctionInfo
-docker run -it -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt --rm --name cscd70_a1 cscd70:2021S
+<span class="nb">cd</span><span class="w"> </span>Assignment1-Introduction_to_LLVM/FunctionInfo
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/mnt<span class="w"> </span>--rm<span class="w"> </span>--name<span class="w"> </span>cscd70_a1<span class="w"> </span>cscd70:2021S
 </pre></div>
 </div>
 <dl class="option-list">
@@ -153,9 +151,9 @@ The mounted directory must be in <strong>absolute path</strong>.</p></li>
 </ul>
 </li>
 <li><p><strong>Run the experiments</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /mnt
-mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build
-cmake .. <span class="o">&amp;&amp;</span> make
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/mnt
+mkdir<span class="w"> </span>build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>build
+cmake<span class="w"> </span>..<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make
 </pre></div>
 </div>
 </li>
@@ -167,16 +165,17 @@ cmake .. <span class="o">&amp;&amp;</span> make
 docker-compose file provided in the root folder of the <a class="reference external" href="https://github.com/UofT-EcoSystem/CSCD70">GitHub repo</a>. We can do
 the same things as we have previously described, but much simpler:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install docker-compose via python-pip.</span>
-pip3 install docker-compose
+pip3<span class="w"> </span>install<span class="w"> </span>docker-compose
 
-docker-compose build cscd70-dev     <span class="c1"># Build the image.</span>
-docker-compose run --rm cscd70-dev  <span class="c1"># Create a container.</span>
+docker-compose<span class="w"> </span>build<span class="w"> </span>cscd70-dev<span class="w">     </span><span class="c1"># Build the image.</span>
+docker-compose<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>cscd70-dev<span class="w">  </span><span class="c1"># Create a container.</span>
 </pre></div>
 </div>
 </section>
 </section>
 <section id="references">
 <h2><a class="toc-backref" href="#id9" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id3" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://stackoverflow.com/a/26149994/6320608">https://stackoverflow.com/a/26149994/6320608</a></p>
@@ -184,6 +183,7 @@ docker-compose run --rm cscd70-dev  <span class="c1"># Create a container.</span
 <aside class="footnote brackets" id="id4" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://docs.docker.com/get-started/">https://docs.docker.com/get-started/</a></p>
+</aside>
 </aside>
 </section>
 </section>
@@ -258,7 +258,7 @@ docker-compose run --rm cscd70-dev  <span class="c1"># Create a container.</span
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, University of Toronto.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
     </div>
   </body>
 </html>
